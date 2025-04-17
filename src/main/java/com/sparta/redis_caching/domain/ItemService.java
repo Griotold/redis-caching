@@ -2,6 +2,7 @@ package com.sparta.redis_caching.domain;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,10 @@ public class ItemService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    // 업데이트가 되었으면 캐시에 먼저 저장하고 DB에 저장
+    @CachePut(cacheNames = "itemCache", key = "args[0]")
+    // 그리고, readAll 의 캐시를 지워준다.
+    @CacheEvict(cacheNames = "itemAllCache", allEntries = true)
     public ItemDto update(Long id, ItemDto dto) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
