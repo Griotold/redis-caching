@@ -1,6 +1,8 @@
 package com.sparta.redis_caching.domain;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,5 +38,10 @@ public class ItemController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("id") Long id) {
         itemService.delete(id);
+    }
+
+    @GetMapping("/search")
+    public Page<ItemDto> search(@RequestParam(name = "q") String query, Pageable pageable) {
+        return itemService.searchByName(query, pageable);
     }
 }
