@@ -2,6 +2,7 @@ package com.sparta.redis_caching.domain;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,9 @@ import java.util.List;
 public class ItemService {
     private final ItemRepository itemRepository;
 
+    // 생성하고 id를 키로
+    // Write-Through
+    @CachePut(cacheNames = "itemCache", key = "#result.id")
     public ItemDto create(ItemDto dto) {
         return ItemDto.fromEntity(itemRepository.save(
                 Item.builder()
