@@ -1,0 +1,53 @@
+package com.sparta.redis_caching.domain;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.yaml.snakeyaml.events.Event;
+
+import java.util.List;
+
+@Slf4j
+@RequiredArgsConstructor
+@Service
+public class ItemService {
+    private final ItemRepository itemRepository;
+
+    public ItemDto create(ItemDto dto) {
+        return ItemDto.fromEntity(itemRepository.save(
+                Item.builder()
+                        .name(dto.getName())
+                        .description(dto.getDescription())
+                        .price(dto.getPrice())
+                        .build()
+        ));
+    }
+
+    public List<ItemDto> readAll() {
+        return itemRepository.findAll()
+                .stream()
+                .map(ItemDto::fromEntity)
+                .toList();
+    }
+
+    public ItemDto readOne(Long id) {
+        return itemRepository.findById(id)
+                .map(ItemDto::fromEntity)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    public ItemDto update(Long id, ItemDto dto) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        item.setName(dto.getName());
+        item.setDescription(dto.getDescription());
+        item.setPrice(dto.getPrice());
+        return ItemDto.fromEntity(itemRepository.save(item));
+    }
+
+    public void delete(Long id) {
+        itemRepository.deleteById(id);
+    }
+}
