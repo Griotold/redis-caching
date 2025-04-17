@@ -25,6 +25,8 @@ public class ItemService {
         ));
     }
 
+    // itemAllCache::readAll
+    @Cacheable(cacheNames = "itemAllCache", key = "methodName")
     public List<ItemDto> readAll() {
         return itemRepository.findAll()
                 .stream()
